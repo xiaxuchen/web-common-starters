@@ -1,0 +1,9 @@
+com\originit\response\result\PlatformResult.class
+com\originit\response\constant\Const.class
+com\originit\response\interceptor\ResponseResultInterceptor.class
+com\originit\response\config\ResponseAutoConfiguration.class
+com\originit\response\result\Result.class
+com\originit\response\handler\ResponseResultHandler.class
+com\originit\response\anotation\ResponseResult.class
+com\originit\response\property\ResponseProperty.class
+com\originit\response\anotation\OriginResponse.class
