@@ -1,6 +1,7 @@
 G:\webtest\web-common\common\src\main\java\com\originit\common\exception\BusinessException.java
 G:\webtest\web-common\common\src\main\java\com\originit\common\exception\UserNotLoginException.java
 G:\webtest\web-common\common\src\main\java\com\originit\common\utils\DateUtil.java
+G:\webtest\web-common\common\src\main\java\com\originit\common\utils\FileUDUtil.java
 G:\webtest\web-common\common\src\main\java\com\originit\common\exception\enums\BusinessExceptionEnum.java
 G:\webtest\web-common\common\src\main\java\com\originit\common\exception\enums\ResultCode.java
 G:\webtest\web-common\common\src\main\java\com\originit\common\utils\EncryptUtil.java
@@ -14,6 +15,7 @@ G:\webtest\web-common\common\src\main\java\com\originit\common\utils\ExceptionUt
 G:\webtest\web-common\common\src\main\java\com\originit\common\utils\HttpUtil.java
 G:\webtest\web-common\common\src\main\java\com\originit\common\page\Pager.java
 G:\webtest\web-common\common\src\main\java\com\originit\common\utils\PropertiesUtil.java
+G:\webtest\web-common\common\src\main\java\com\originit\common\utils\ResourceUtil.java
 G:\webtest\web-common\common\src\main\java\com\originit\common\utils\IpUtil.java
 G:\webtest\web-common\common\src\main\java\com\originit\common\validator\group\SearchGroup.java
 G:\webtest\web-common\common\src\main\java\com\originit\common\validator\annotation\EnumValue.java

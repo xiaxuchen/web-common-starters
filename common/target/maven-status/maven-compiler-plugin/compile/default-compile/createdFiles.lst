@@ -1,4 +1,5 @@
 com\originit\common\exception\RemoteAccessException.class
+com\originit\common\utils\FileUDUtil$FileProperties.class
 com\originit\common\exception\BusinessException.class
 com\originit\common\utils\PropertiesUtil.class
 com\originit\common\exception\LockFailException.class
@@ -27,9 +28,11 @@ com\originit\common\page\Pager.class
 com\originit\common\exception\PermissionForbiddenException.class
 com\originit\common\utils\HttpUtil.class
 com\originit\common\utils\RequestContextHolderUtil.class
+com\originit\common\utils\ResourceUtil.class
 com\originit\common\validator\EnumValueValidator.class
 com\originit\common\exception\ParameterInvalidException.class
 com\originit\common\validator\info\ParameterInvalidItem.class
 com\originit\common\utils\IpUtil.class
 com\originit\common\utils\SecurityUtil.class
+com\originit\common\utils\FileUDUtil.class
 com\originit\common\utils\SpringUtil.class
