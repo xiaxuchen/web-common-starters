@@ -7,11 +7,12 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="common-user-service" />
-        <module name="common-mp-generator" />
         <module name="common" />
         <module name="common-response-starter" />
         <module name="common-exception" />
         <module name="common-logger-starter" />
+        <module name="common-mp" />
+        <module name="common-mp-generator" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
@@ -26,6 +27,7 @@
       <module name="common-autoconfig" options="-parameters" />
       <module name="common-exception" options="-parameters" />
       <module name="common-logger-starter" options="-parameters" />
+      <module name="common-mp" options="-parameters" />
       <module name="common-mp-generator" options="-parameters" />
       <module name="common-response" options="-parameters" />
       <module name="common-response-starter" options="-parameters" />

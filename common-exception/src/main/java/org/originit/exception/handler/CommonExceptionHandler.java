@@ -1,5 +1,7 @@
 package org.originit.exception.handler;
 
+import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.originit.common.exception.NoTokenFoundException;
 import org.originit.exception.BusinessException;
 import org.originit.exception.enums.ResultCode;
 import org.originit.exception.log.ExceptionLogger;
@@ -8,8 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
+import org.springframework.validation.BindException;
 import org.springframework.validation.ObjectError;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -60,7 +62,7 @@ public class CommonExceptionHandler {
     @ExceptionHandler(IllegalAccessException.class)
     public Object handleIllegalAccessException(IllegalAccessException e) {
         exceptionLogger.logException(e);
-        return generate(ResultCode.PERMISSION_NO_ACCESS,e.getMessage());
+        return generate(ResultCode.PERMISSION_INVAILD,e.getMessage());
     }
 
     @ExceptionHandler(IllegalStateException.class)
@@ -79,11 +81,23 @@ public class CommonExceptionHandler {
         return generate(code,e.getMessage());
     }
 
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public Object handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
+    @ExceptionHandler(BindException.class)
+    public Object handleMethodArgumentNotValidException(BindException e) {
         exceptionLogger.logException(e);
         List<ObjectError> allErrors = e.getBindingResult().getAllErrors();
         String message = allErrors.stream().map(DefaultMessageSourceResolvable::getDefaultMessage).collect(Collectors.joining(";"));
         return generate(ResultCode.PARAM_IS_INVALID,message);
+    }
+
+
+    @ExceptionHandler(NoTokenFoundException.class)
+    public Object handleNoTokenFoundException(NoTokenFoundException e) {
+        exceptionLogger.logException(e);
+        return generate(ResultCode.TOKEN_NOT_FOUND,"用户未认证");
+    }
+    @ExceptionHandler({JWTVerificationException.class})
+    public Object handleJWTErrorException(JWTVerificationException e) {
+        exceptionLogger.logException(e);
+        return generate(ResultCode.INVALID_TOKEN_ERROR,"用户认证信息错误");
     }
 }

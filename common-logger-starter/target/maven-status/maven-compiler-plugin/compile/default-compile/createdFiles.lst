@@ -1,6 +1,0 @@
-com\originit\logger\annotation\Log.class
-com\originit\logger\property\LogProperty.class
-com\originit\logger\enums\HeaderConstants.class
-com\originit\logger\handler\LoggerAspect.class
-com\originit\logger\config\LoggerAutoConfiguration.class
-com\originit\logger\annotation\NoLog.class

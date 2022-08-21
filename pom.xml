@@ -22,11 +22,22 @@
         <module>common-exception</module>
         <module>common-user-service</module>
         <module>common-mp-generator</module>
+        <module>common-mp</module>
     </modules>
 
 
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>com.baomidou</groupId>
+                <artifactId>mybatis-plus-generator</artifactId>
+                <version>3.5.3</version>
+            </dependency>
+            <dependency>
+                <groupId>com.baomidou</groupId>
+                <artifactId>mybatis-plus-boot-starter</artifactId>
+                <version>3.5.2</version>
+            </dependency>
             <dependency>
                 <groupId>org.originit</groupId>
                 <artifactId>common-response-starter</artifactId>
