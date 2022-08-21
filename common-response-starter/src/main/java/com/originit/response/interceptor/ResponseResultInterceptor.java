@@ -17,7 +17,7 @@ import javax.servlet.http.HttpServletResponse;
 
 public class ResponseResultInterceptor implements HandlerInterceptor {
 
-    private ResponseProperty responseProperty;
+    private final ResponseProperty responseProperty;
 
     public ResponseResultInterceptor(ResponseProperty responseProperty) {
         this.responseProperty = responseProperty;

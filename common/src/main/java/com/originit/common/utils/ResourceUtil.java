@@ -1,11 +1,9 @@
 package com.originit.common.utils;
 
 import cn.hutool.core.io.IoUtil;
-import com.originit.common.exception.InternalServerException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.*;
-import org.springframework.web.multipart.MultipartFile;
 import sun.misc.BASE64Encoder;
 
 import javax.servlet.http.HttpServletResponse;
@@ -34,7 +32,7 @@ public class ResourceUtil {
             IoUtil.write(response.getOutputStream(),false,r.getBody());
         } catch (Exception e) {
             log.error("exception:{}\r\nmsg:{}\r\ntrace:{}",e.getClass(),e.getMessage(), cn.hutool.core.exceptions.ExceptionUtil.stacktraceToString(e));
-            throw new InternalServerException();
+            throw new RuntimeException(e);
         }
     }
 
@@ -43,7 +41,7 @@ public class ResourceUtil {
             return getFile2BytesInternal(path,filename,agent);
         } catch (Exception e) {
             log.error("exception:{}\r\nmsg:{}\r\ntrace:{}",e.getClass(),e.getMessage(),cn.hutool.core.exceptions.ExceptionUtil.stacktraceToString(e));
-            throw new InternalServerException();
+            throw new RuntimeException(e);
         }
     }
 

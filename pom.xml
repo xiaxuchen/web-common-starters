@@ -19,6 +19,35 @@
         <module>common-response-starter</module>
         <module>common</module>
         <module>common-logger-starter</module>
+        <module>common-exception</module>
+        <module>common-user-service</module>
+        <module>common-mp-generator</module>
     </modules>
+
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.originit</groupId>
+                <artifactId>common-response-starter</artifactId>
+                <version>1.0-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>org.originit</groupId>
+                <artifactId>common</artifactId>
+                <version>1.0-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>org.originit</groupId>
+                <artifactId>common-exception</artifactId>
+                <version>1.0-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>org.originit</groupId>
+                <artifactId>common-logger-starter</artifactId>
+                <version>1.0-SNAPSHOT</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
 </project>

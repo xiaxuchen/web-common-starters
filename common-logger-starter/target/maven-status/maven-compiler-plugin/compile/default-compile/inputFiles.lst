@@ -1,6 +1,6 @@
-G:\webtest\web-common\common-logger-starter\src\main\java\com\originit\logger\annotation\NoLog.java
-G:\webtest\web-common\common-logger-starter\src\main\java\com\originit\logger\handler\LoggerAspect.java
-G:\webtest\web-common\common-logger-starter\src\main\java\com\originit\logger\enums\HeaderConstants.java
-G:\webtest\web-common\common-logger-starter\src\main\java\com\originit\logger\annotation\Log.java
-G:\webtest\web-common\common-logger-starter\src\main\java\com\originit\logger\config\LoggerAutoConfiguration.java
-G:\webtest\web-common\common-logger-starter\src\main\java\com\originit\logger\property\LogProperty.java
+D:\javaProject\web-common\common-logger-starter\src\main\java\com\originit\logger\annotation\Log.java
+D:\javaProject\web-common\common-logger-starter\src\main\java\com\originit\logger\enums\HeaderConstants.java
+D:\javaProject\web-common\common-logger-starter\src\main\java\com\originit\logger\handler\LoggerAspect.java
+D:\javaProject\web-common\common-logger-starter\src\main\java\com\originit\logger\property\LogProperty.java
+D:\javaProject\web-common\common-logger-starter\src\main\java\com\originit\logger\config\LoggerAutoConfiguration.java
+D:\javaProject\web-common\common-logger-starter\src\main\java\com\originit\logger\annotation\NoLog.java

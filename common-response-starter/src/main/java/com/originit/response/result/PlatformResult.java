@@ -1,11 +1,10 @@
 package com.originit.response.result;
 
 
-import com.originit.common.exception.enums.ResultCode;
+import com.originit.common.constant.CommonConstant;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
 
 /**
  * 通用响应
@@ -19,31 +18,30 @@ public class PlatformResult<T> extends Result{
      private Integer code;
      private String msg;
      private T data;
-     private Boolean success;
 
     public PlatformResult() {
     }
 
     public PlatformResult(T data) {
-        this.code = ResultCode.SUCCESS.code();
-        this.msg = ResultCode.SUCCESS.message();
+        this.code = CommonConstant.CODE_SUCCESS;
+        this.msg = CommonConstant.MSG_SUCCESS;
         this.data = data;
     }
 
-    public static <T> Result success(T data, String msg) {
-        return new PlatformResult<>(ResultCode.SUCCESS.code(),msg,data,true);
+    public static <T> PlatformResult<T> success(T data, String msg) {
+        return new PlatformResult<>(CommonConstant.CODE_SUCCESS,msg,data);
     }
 
-    public static <T> Result success(T data) {
-        return new PlatformResult<T>(ResultCode.SUCCESS.code(),"success",data,true);
+    public static <T> PlatformResult<T> success(T data) {
+        return new PlatformResult<T>(CommonConstant.CODE_SUCCESS,"success",data);
     }
 
-    public static <T> Result fail (Integer code,String msg,T data) {
-        return new PlatformResult<T>(code,msg,data,false);
+    public static <T> PlatformResult<T> fail (Integer code,String msg,T data) {
+        return new PlatformResult<T>(code,msg,data);
     }
 
-    public static <T> Result fail (Integer code,String msg) {
-        return new PlatformResult<T>(code,msg,null,false);
+    public static <T> PlatformResult<T> fail (Integer code,String msg) {
+        return new PlatformResult<T>(code,msg,null);
     }
 
 }

@@ -2,7 +2,6 @@ package com.originit.logger.handler;
 
 
 import com.originit.logger.annotation.Log;
-import com.originit.common.utils.IpUtil;
 import com.originit.common.utils.RequestContextHolderUtil;
 import com.originit.logger.annotation.NoLog;
 import com.originit.logger.enums.HeaderConstants;
@@ -47,28 +46,41 @@ public class LoggerAspect {
         if (!logFlag) {
             return joinPoint.proceed();
         }
+        String methodName = this.getMethodName(joinPoint);
+        String params = this.getParamsJson(joinPoint);
+        String logResult = "";
 
+        // 若当前无请求上下文，直接打印
+        try {
+            RequestContextHolderUtil.getRequest();
+        }catch (Exception e) {
+            long start = System.currentTimeMillis();
+            logger.info("Started method 【{}】 params 【{}】", methodName, params);
+            final Object proceed = joinPoint.proceed();
+            if (proceed != null) {
+                logResult = proceed.toString();
+            }
+            logger.info(" Ended method 【{}】 params 【{}】result 【{}】cost [{}] millis ", methodName, params,logResult,System.currentTimeMillis() - start);
+            return proceed;
+        }
         HttpServletRequest request = RequestContextHolderUtil.getRequest();
         Object requester = request.getSession().getAttribute("auth");
         String ip = getIpAddress(request);
-        String methodName = this.getMethodName(joinPoint);
-        String params = this.getParamsJson(joinPoint);
-
         String callSource = request.getHeader(HeaderConstants.CALL_SOURCE);
         String appVersion = request.getHeader(HeaderConstants.APP_VERSION);
         String apiVersion = request.getHeader(HeaderConstants.API_VERSION);
         String userAgent = request.getHeader("user-agent");
 
         logger.info("Started request requester [{}] method [{}] params [{}] IP [{}] callSource [{}] appVersion [{}] apiVersion [{}] userAgent [{}]", requester, methodName, params, ip, callSource, appVersion, apiVersion, userAgent);
-        Long start = System.currentTimeMillis();
+        long start = System.currentTimeMillis();
+
         Object result = joinPoint.proceed();
-        Object logResult = "";
         if(result != null)
         {
-            logResult = result;
+            logResult = result.toString();
         }
         logger.info("Ended request requester [{}] method [{}] params[{}] response is [{}] cost [{}] millis ",
-                requester, methodName, params, logResult.toString(), System.currentTimeMillis() - start);
+                requester, methodName, params, logResult, System.currentTimeMillis() - start);
         return result;
     }
 
@@ -125,7 +137,7 @@ public class LoggerAspect {
             return false;
         }
         //如果方法为get请求则根据配置是否打印，除非方法、类上有Log注解
-        return (logProperty.isLogGet() || method.getAnnotation(GetMapping.class) == null) || method.getAnnotation(Log.class) != null
+        return (logProperty.isLogGet() && method.getAnnotation(GetMapping.class) != null) || method.getAnnotation(Log.class) != null
                 || method.getDeclaringClass().getAnnotation(Log.class) != null;
     }
 
