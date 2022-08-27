@@ -20,6 +20,9 @@ public enum ResultCode {
 
     /* 系统错误：40001-49999 */
     SYSTEM_INNER_ERROR(40001, "系统繁忙，请稍后重试"),
+    REQUEST_ERROR(40002, "请求错误!"),
+    REQUEST_METHOD_ERROR(40003, "请求方法不支持!"),
+
 
     /* 权限错误：70001-79999 */
     PERMISSION_INVAILD(70001,"权限异常"),

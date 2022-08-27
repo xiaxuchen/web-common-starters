@@ -21,20 +21,33 @@ import java.util.Map;
 public class JwtHolder {
 
     private static final String PAYLOAD_KEY = "payload";
+    private final int expireTime;
+    private final int refreshExpireTime;
 
     private Algorithm algorithm;
 
     private String issuer;
 
-    /**
-     * token存储的头
-     */
-    private String tokenHeader;
+    private final String refreshIdKey;
 
-    public JwtHolder(Algorithm algorithm, String issuer,String tokenHeader) {
+    private final String userIdKey;
+
+    public JwtHolder(Algorithm algorithm, String issuer) {
         this.algorithm = algorithm;
         this.issuer = issuer;
-        this.tokenHeader = tokenHeader;
+        this.userIdKey = "userId";
+        this.refreshIdKey = "refreshId";
+        this.expireTime = 60*60;
+        this.refreshExpireTime = 7*24*60*60;
+    }
+
+    public JwtHolder(Algorithm algorithm, String issuer,String userIdKey,String refreshIdKey,int expireTime,int refreshExpireTime) {
+        this.algorithm = algorithm;
+        this.issuer = issuer;
+        this.refreshIdKey = refreshIdKey;
+        this.userIdKey = userIdKey;
+        this.expireTime = expireTime;
+        this.refreshExpireTime = refreshExpireTime;
     }
 
     /**
@@ -67,49 +80,86 @@ public class JwtHolder {
     }
 
 
+
     /**
      * 解码jwt
-     * @throws NoTokenFoundException 在tokenHeader指定的header中找不到token
      * @throws SignatureVerificationException 签名不一致
      * @throws TokenExpiredException token过期
      * @throws AlgorithmMismatchException 算法不一致
      * @throws InvalidClaimException 失效的payload
      * @return JWT相关信息封装
      */
-    public DecodedJWT decodedJWT() throws NoTokenFoundException,SignatureVerificationException, TokenExpiredException, AlgorithmMismatchException, InvalidClaimException  {
-        final String token = RequestContextHolderUtil.getRequest().getHeader(this.tokenHeader);
-        if (token == null) {
-            throw new NoTokenFoundException();
-        }
+    public DecodedJWT decodedJWT(String token) throws NoTokenFoundException,SignatureVerificationException, TokenExpiredException, AlgorithmMismatchException, InvalidClaimException  {
         final JWTVerifier verifier = JWT.require(this.algorithm).build();
-        final DecodedJWT decodedJWT = verifier.verify(token);
-        return decodedJWT;
+        return verifier.verify(token);
     }
 
     /**
      * 验证失败抛出异常
-     * @throws NoTokenFoundException 在tokenHeader指定的header中找不到token
      * @throws SignatureVerificationException 签名不一致
      * @throws TokenExpiredException token过期
      * @throws AlgorithmMismatchException 算法不一致
      * @throws InvalidClaimException 失效的payload
      */
-    public void verify() throws SignatureVerificationException, TokenExpiredException, AlgorithmMismatchException, InvalidClaimException {
-        decodedJWT();
+    public void verify(String token) throws SignatureVerificationException, TokenExpiredException, AlgorithmMismatchException, InvalidClaimException {
+        decodedJWT(token);
     }
 
     /**
      * 获取负载信息
-     * @throws NoTokenFoundException 在tokenHeader指定的header中找不到token
      * @throws SignatureVerificationException 签名不一致
      * @throws TokenExpiredException token过期
      * @throws AlgorithmMismatchException 算法不一致
      * @throws InvalidClaimException 失效的payload
      * @return 负载信息
      */
-    public Map<String,Object> getPayload() throws SignatureVerificationException, TokenExpiredException, AlgorithmMismatchException, InvalidClaimException {
-        return decodedJWT().getClaim(PAYLOAD_KEY).asMap();
+    public Map<String,Object> getPayload(String token) throws SignatureVerificationException, TokenExpiredException, AlgorithmMismatchException, InvalidClaimException {
+        return decodedJWT(token).getClaim(PAYLOAD_KEY).asMap();
     }
 
+
+    /**
+     * 不校验直接拿取
+     * @throws SignatureVerificationException 签名不一致
+     * @throws AlgorithmMismatchException 算法不一致
+     * @throws InvalidClaimException 失效的payload
+     * @param token
+     */
+    public DecodedJWT decodedJWTWithoutVerify(String token) {
+        return JWT.decode(token);
+    }
+
+    /**
+     * 不校验直接拿取
+     * @throws SignatureVerificationException 签名不一致
+     * @throws AlgorithmMismatchException 算法不一致
+     * @throws InvalidClaimException 失效的payload
+     * @param token
+     */
+    public Map<String,Object> justPayload(String token) throws SignatureVerificationException, TokenExpiredException, AlgorithmMismatchException, InvalidClaimException {
+        return decodedJWTWithoutVerify(token).getClaim(PAYLOAD_KEY).asMap();
+    }
+
+    /**
+     * 快速创建token
+     * @param userId 用户id
+     * @return access token
+     */
+    public String generateToken(String userId) {
+        return generateToken(userIdKey,userId,expireTime);
+    }
+
+    /**
+     * 快速生成refresh token
+     * @param userId 用户id
+     * @param refreshId refresh id
+     * @return refresh token
+     */
+    public String generateRefreshToken(String userId,String refreshId) {
+        final Map<String, Object> payload = new HashMap<>(2);
+        payload.put(userIdKey,userId);
+        payload.put(refreshIdKey,refreshId);
+        return generateToken(payload,refreshExpireTime);
+    }
 
 }

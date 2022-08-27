@@ -1,6 +1,7 @@
 package org.originit.exception.handler;
 
 import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.originit.common.exception.NoTokenFoundException;
 import org.originit.exception.BusinessException;
 import org.originit.exception.enums.ResultCode;
@@ -12,6 +13,7 @@ import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.validation.BindException;
 import org.springframework.validation.ObjectError;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -50,7 +52,13 @@ public class CommonExceptionHandler {
     @ExceptionHandler({Exception.class})
     public Object handleDefault(Exception e) {
         exceptionLogger.logException(e);
-        return generate(ResultCode.SYSTEM_INNER_ERROR);
+        return generate(ResultCode.REQUEST_ERROR,e.getMessage());
+    }
+
+    @ExceptionHandler({HttpRequestMethodNotSupportedException.class})
+    public Object handleHttpRequestMethodNotSupportedException(HttpRequestMethodNotSupportedException e) {
+        exceptionLogger.logException(e);
+        return generate(ResultCode.REQUEST_METHOD_ERROR);
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
@@ -99,5 +107,11 @@ public class CommonExceptionHandler {
     public Object handleJWTErrorException(JWTVerificationException e) {
         exceptionLogger.logException(e);
         return generate(ResultCode.INVALID_TOKEN_ERROR,"用户认证信息错误");
+    }
+
+    @ExceptionHandler(TokenExpiredException.class)
+    public Object handleTokenExpiredException(TokenExpiredException e) {
+        exceptionLogger.logException(e);
+        return generate(ResultCode.TOKEN_EXPIRED);
     }
 }
