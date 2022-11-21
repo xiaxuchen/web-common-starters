@@ -34,7 +34,7 @@ public class PageVO<T> {
     }
 
     public static <T> PageVO<T> empty() {
-        return create(null,0L,1L,15l);
+        return create(null,0L,1L,15L);
     }
 
     public static <T> PageVO<T> empty(long size) {

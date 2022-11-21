@@ -1,0 +1,66 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+class UploadConfig {
+    String model;
+}
+
+class UploadResult {
+    String path;
+
+    Integer type;
+}
+
+class FileInfo {
+
+    String name;
+
+    String originalFileName;
+
+    String contentType;
+
+    Boolean isEmpty;
+
+    long size;
+
+    InputStream inputStream;
+
+}
+
+
+interface FileUploadStrategy {
+    UploadResult uploadImage(FileInfo file,UploadConfig config);
+
+    UploadResult uploadFile(FileInfo file,UploadConfig config);
+
+    UploadResult uploadBigFile(FileInfo file,UploadConfig config);
+
+    String getType();
+}
+interface FileFilter {
+    boolean doFilter(FileInfo file,UploadConfig config);
+}
+
+interface FileUploader {
+
+    UploadResult upload(FileInfo file,UploadConfig config);
+
+}
+
+abstract class AbstractSimpleFileUploadStrategy implements FileUploadStrategy{
+    # {abstract} UploadResult justUpload(FileInfo file,UploadConfig config);
+}
+
+abstract class AbstractFileUploader implements FileUploader{
+    # FileFilter filter;
+    # FileUploadStrategy strategy;
+
+    + void setStrategy(FileUploadStrategy strategy);
+    + void setFilter(FileFilter filter);
+
+    # UploadResult onUpload(FileUploadStrategy addStrategy,FileInfo file,UploadConfig config);
+}
+
+FileUploadStrategy o-- AbstractFileUploader
+FileFilter *-- AbstractFileUploader
+@enduml

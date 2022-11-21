@@ -1,0 +1,14 @@
+common:
+  file:
+    image-max-size: 50000000
+    support-imgs:
+      - "*"
+fdfs:
+  so-timeout: 1500
+  connect-timeout: 600
+  #  tracker-list: 192.168.0.191:22122  #单机连接服务配置
+  tracker-list:
+    - 81.70.99.160:22122
+  web-server-url: 81.70.99.160:9999
+debug: true
+

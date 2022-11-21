@@ -1,16 +1,10 @@
 package com.originit.common.utils;
 
-import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.MediaType;
-import org.springframework.stereotype.Component;
 import org.springframework.util.FileCopyUtils;
 
 import javax.servlet.http.HttpServletResponse;
@@ -24,33 +18,13 @@ import java.nio.file.Paths;
 import java.util.Base64;
 import java.util.UUID;
 
-@EnableConfigurationProperties(FileUDUtil.FileProperties.class)
-@Component
 @Slf4j
 public class FileUDUtil {
-
-    @Data
-    @ConfigurationProperties("custom.fileupload")
-    public static class FileProperties {
-        private String path = "\\images";
-
-        private boolean external = false;
-    }
 
 
 
     public static Logger logger = LoggerFactory.getLogger(FileUDUtil.class);
 
-    public static String PATH = "\\images";
-
-    // 是否在项目外部
-    public static Boolean EXTERNAL = false;
-
-    @Autowired
-    public void setProperties(FileProperties properties){
-        FileUDUtil.EXTERNAL = properties.external;
-        FileUDUtil.PATH = properties.path;
-    }
 
 
     /**
@@ -125,7 +99,9 @@ public class FileUDUtil {
             } else {
                 file = new File(FileUDUtil.class.getClassLoader().getResource(relativePath).getPath(), realPath);
             }
-
+            if (filename == null) {
+                filename = realPath.substring(realPath.lastIndexOf(File.separator) + 1);
+            }
             resp.reset();
 //          // 让浏览器显示下载文件对话框
             resp.setContentType(MediaType.parseMediaType(Files.probeContentType(Paths.get(file.getAbsolutePath()))).getType());
@@ -172,28 +148,33 @@ public class FileUDUtil {
      * @param filename 文件名
      * @return 路径
      */
-    private static String getPath (String filename) {
+    private static String getSavingPath(String path, String filename) {
         //得到hashCode
         int hashcode = filename.hashCode();
         //得到名为1到16的下及文件夹
         int dir1 = hashcode & 0xf;
         //得到名为1到16的下下及文件夹
         int dir2 = (hashcode & 0xf0) >> 4;
+        path = FilenameUtils.separatorsToSystem(path);
+        if (!path.endsWith(File.separator)) {
+            path += File.separator;
+        }
         //得到文件路径
-        String dir = PATH + File.separator + dir1 + File.separator + dir2 + File.separator +
+        String fileSavePath = path + dir1 + File.separator + dir2 + File.separator +
                 UUID.randomUUID().toString().replace("-","") +
                 filename.substring(filename.lastIndexOf("."));
-        return dir;
+        return fileSavePath;
     }
     /***
      * 上传文件
      * @param inputStream 文件的输入流
+     * @param pathPrefix 路径前缀
      * @param filename 文件名
      * @return 文件的编码
      */
-    public static String saveFile(InputStream inputStream, String filename) {
+    public static String saveFile(InputStream inputStream,String pathPrefix, String filename) {
         try {
-            String path = getPath(filename);
+            String path = getSavingPath(pathPrefix, filename);
             mkdirIfNotExist(path);
             File file = getFileByPath(path);
             // TODO 修改
@@ -245,9 +226,8 @@ public class FileUDUtil {
      * @return 文件
      */
     private static File getFileByPath(String path){
-        if (EXTERNAL) {
-            return new File(path);
-        }
-        return  new File(FileUDUtil.class.getClassLoader().getResource("").getPath(), path);
+        return new File(path);
+//        return  new File(FileUDUtil.class.getClassLoader().getResource("").getPath(), path);
     }
+
 }
