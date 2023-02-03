@@ -13,8 +13,6 @@ import java.net.InetAddress;
 import java.net.URLEncoder;
 import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.Base64;
 import java.util.UUID;
 
@@ -69,12 +67,16 @@ public class FileUDUtil {
      * @param agent 浏览器的user-agent
      */
     public static void downloadFile(String code, String filename, String agent, HttpServletResponse resp) {
-        String realPath = new String(Base64.getDecoder().decode(code), StandardCharsets.UTF_8);
+        String realPath = decodePath(code);
         if (filename == null) {
             filename = realPath.substring(realPath.lastIndexOf(File.separator) + 1);
         }
         log.info("【初始化文件上传工具类】current download file name is {}", filename);
         downloadFileWithPath("",realPath,filename,agent,resp);
+    }
+
+    public static String decodePath(String code) {
+        return new String(Base64.getDecoder().decode(code), StandardCharsets.UTF_8);
     }
 
     /**
@@ -85,7 +87,7 @@ public class FileUDUtil {
         if (code == null) {
             return null;
         }
-        String realPath = new String(Base64.getDecoder().decode(code), StandardCharsets.UTF_8);
+        String realPath = decodePath(code);
         // 获取目录下的资源
         return getFileByPath(realPath);
     }
@@ -104,7 +106,8 @@ public class FileUDUtil {
             }
             resp.reset();
 //          // 让浏览器显示下载文件对话框
-            resp.setContentType(MediaType.parseMediaType(Files.probeContentType(Paths.get(file.getAbsolutePath()))).getType());
+            resp.setContentType(MediaType.APPLICATION_OCTET_STREAM_VALUE);
+//            resp.setContentType(MediaType.parseMediaType(Files.probeContentType(Paths.get(file.getAbsolutePath()))).getType());
             resp.setCharacterEncoding("utf-8");
             resp.setContentLength((int) file.length());
             resp.setHeader("Content-Disposition", "attachment;filename="+resolveDownloadFileName(filename,agent));
@@ -159,10 +162,13 @@ public class FileUDUtil {
         if (!path.endsWith(File.separator)) {
             path += File.separator;
         }
+        String suffix = "";
+        if (filename.lastIndexOf(".") != -1) {
+            suffix = filename.substring(filename.lastIndexOf("."));
+        }
         //得到文件路径
         String fileSavePath = path + dir1 + File.separator + dir2 + File.separator +
-                UUID.randomUUID().toString().replace("-","") +
-                filename.substring(filename.lastIndexOf("."));
+                UUID.randomUUID().toString().replace("-","") + suffix;
         return fileSavePath;
     }
     /***
@@ -181,11 +187,15 @@ public class FileUDUtil {
             FileCopyUtils.copy(inputStream,new FileOutputStream(file));
             log.info("save file at the position path in {}",file.getAbsolutePath());
             // 返回base64编码
-            return  Base64.getEncoder().encodeToString(path.getBytes(StandardCharsets.UTF_8));
+            return encodePath(path);
         }catch (Exception e) {
             e.printStackTrace();
             throw new IllegalStateException("文件上传异常");
         }
+    }
+
+    public static String encodePath(String path) {
+        return Base64.getEncoder().encodeToString(path.getBytes(StandardCharsets.UTF_8));
     }
 
     /**
