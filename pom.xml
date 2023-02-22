@@ -22,12 +22,11 @@
         <module>common-exception</module>
         <module>common-user-service</module>
         <module>common-mp-generator</module>
-        <module>common-mp</module>
+<!--        <module>common-mp</module>-->
         <module>common-file</module>
         <module>demo</module>
         <module>redis-mq</module>
     </modules>
-
 
     <dependencyManagement>
         <dependencies>
@@ -68,5 +67,36 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
-
+    <pluginRepositories>
+        <pluginRepository>
+            <id>central</id>
+            <name>aliyun maven</name>
+            <url>https://maven.aliyun.com/nexus/content/groups/public/</url>
+            <layout>default</layout>
+            <!-- 是否开启发布版构件下载 -->
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <!-- 是否开启快照版构件下载 -->
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </pluginRepository>
+    </pluginRepositories>
+    <repositories>
+        <repository>
+            <id>central</id>
+            <name>aliyun maven</name>
+            <url>https://maven.aliyun.com/nexus/content/groups/public/</url>
+            <layout>default</layout>
+            <!-- 是否开启发布版构件下载 -->
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <!-- 是否开启快照版构件下载 -->
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
 </project>
