@@ -10,8 +10,8 @@ import org.originit.et.info.ModelTableInfoAcquirer;
 import org.originit.et.info.impl.JPAColumnInfoAcquirer;
 import org.originit.et.info.impl.JPAModelTableInfoAcquirer;
 import org.reflections.Reflections;
+import org.reflections.scanners.SubTypesScanner;
 
-import javax.persistence.Table;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -77,8 +77,17 @@ public abstract class AbstractConvertExecutor implements ConvertExecutor{
         List<Class> modelClasses = new ArrayList<>();
         if (packageNames != null) {
             for (String packageName : packageNames) {
-                Reflections reflections = new Reflections(packageName);
-                Set<Class<?>> classes = reflections.getTypesAnnotatedWith(Table.class);
+                Reflections reflections = new Reflections(packageName, new SubTypesScanner(false));
+                Set<Class<?>> classes = reflections.getAllTypes().stream().map(cs -> ClassUtil.loadClass(cs))
+                        .filter(objectClass -> {
+                            try {
+                                modelTableInfoAcquirer.isTable(objectClass);
+                                return true;
+                            }catch (Exception e) {
+                                return false;
+                            }
+                        })
+                        .collect(Collectors.toSet());
                 modelClasses.addAll(classes);
             }
         }

@@ -26,6 +26,7 @@
 <!--        <module>common-mp</module>-->
         <module>common-file</module>
         <module>entity2table</module>
+        <module>mp2table_acquirer</module>
     </modules>
 
     <dependencyManagement>

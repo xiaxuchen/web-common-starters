@@ -1,5 +1,6 @@
 package org.originit.et.info;
 
+import cn.hutool.core.util.StrUtil;
 import org.originit.et.entity.Column;
 import org.originit.et.entity.Id;
 import org.originit.et.entity.Table;
@@ -47,6 +48,7 @@ public interface ModelTableInfoAcquirer {
      */
     default Table getTable(Class<?> c) {
         final List<Column> columns = getColumns(c);
+        columns.forEach(column -> column.setName(StrUtil.toUnderlineCase(column.getName())));
         final List<Column> idList = columns.stream().filter(column -> column instanceof Id).collect(Collectors.toList());
         if (idList.size() > 1) {
             throw new IllegalArgumentException("暂不支持多列主键,table:" + getTableName(c) + "idFields:" + idList.stream().map(column -> column.getName()).collect(Collectors.toList()));
