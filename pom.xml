@@ -22,10 +22,10 @@
         <module>common-exception</module>
         <module>common-user-service</module>
         <module>common-mp-generator</module>
+        <module>demo</module>
 <!--        <module>common-mp</module>-->
         <module>common-file</module>
-        <module>demo</module>
-        <module>redis-mq</module>
+        <module>entity2table</module>
     </modules>
 
     <dependencyManagement>
