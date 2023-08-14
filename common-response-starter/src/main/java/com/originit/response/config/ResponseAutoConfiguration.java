@@ -1,9 +1,13 @@
 package com.originit.response.config;
 
 
+import com.originit.response.anotation.ResponseResult;
 import com.originit.response.property.ResponseProperty;
 import com.originit.response.handler.ResponseResultHandler;
 import com.originit.response.interceptor.ResponseResultInterceptor;
+import com.originit.response.result.PlatformResult;
+import com.originit.response.success.DefaultSuccessCodeAcquirer;
+import com.originit.response.success.SuccessCodeAcquirer;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
@@ -44,4 +48,8 @@ public class ResponseAutoConfiguration implements WebMvcConfigurer {
         return new ResponseResultHandler();
     }
 
+    @Bean
+    public SuccessCodeAcquirer successCodeAcquirer() {
+        return new DefaultSuccessCodeAcquirer();
+    }
 }

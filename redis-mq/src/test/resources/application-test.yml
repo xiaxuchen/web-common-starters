@@ -1,3 +1,0 @@
-spring:
-  redis:
-    host: 10.10.49.29

@@ -13,6 +13,6 @@ public class ResponseProperty {
     // 是否启用
     private Boolean enable = true;
 
-    private Boolean handleSimpleObject = false;
+    private Integer successCode = 1;
 
 }

@@ -2,6 +2,8 @@ package com.originit.response.result;
 
 
 import com.originit.common.constant.CommonConstant;
+import com.originit.common.utils.SpringUtil;
+import com.originit.response.success.SuccessCodeAcquirer;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -19,21 +21,19 @@ public class PlatformResult<T> extends Result{
      private String msg;
      private T data;
 
-    public PlatformResult() {
-    }
-
     public PlatformResult(T data) {
-        this.code = CommonConstant.CODE_SUCCESS;
-        this.msg = CommonConstant.MSG_SUCCESS;
+        this.code = SpringUtil.getBean(SuccessCodeAcquirer.class).getSuccessCode();
         this.data = data;
     }
 
+
+
     public static <T> PlatformResult<T> success(T data, String msg) {
-        return new PlatformResult<>(CommonConstant.CODE_SUCCESS,msg,data);
+        return new PlatformResult<>(SpringUtil.getBean(SuccessCodeAcquirer.class).getSuccessCode(),msg,data);
     }
 
     public static <T> PlatformResult<T> success(T data) {
-        return new PlatformResult<T>(CommonConstant.CODE_SUCCESS,"success",data);
+        return new PlatformResult<T>(SpringUtil.getBean(SuccessCodeAcquirer.class).getSuccessCode(),"success",data);
     }
 
     public static <T> PlatformResult<T> fail (Integer code,String msg,T data) {

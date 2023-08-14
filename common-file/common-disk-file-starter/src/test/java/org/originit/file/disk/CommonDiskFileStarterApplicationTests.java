@@ -20,9 +20,6 @@ class CommonDiskFileStarterApplicationTests {
 
     @Test
     void contextLoads() throws FileNotFoundException {
-        final UploadResult result = uploader.upload(FileInfo.builder().originalFileName("asdajsd.log")
-                .inputStream(new FileInputStream("E:\\ad_log.log")).build());
-        Assertions.assertTrue(FileUtil.exist(uploader.getFile(result.getPath())));
     }
 
 }

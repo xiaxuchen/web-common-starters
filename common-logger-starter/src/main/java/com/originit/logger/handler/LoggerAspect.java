@@ -1,17 +1,21 @@
 package com.originit.logger.handler;
 
 
+import com.originit.common.utils.ExceptionUtil;
 import com.originit.logger.annotation.Log;
 import com.originit.common.utils.RequestContextHolderUtil;
 import com.originit.logger.annotation.NoLog;
 import com.originit.logger.enums.HeaderConstants;
 import com.originit.logger.property.LogProperty;
+import com.sun.org.omg.CORBA.ParameterDescriptionHelper;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.LocalVariableTableParameterNameDiscoverer;
+import org.springframework.core.ParameterNameDiscoverer;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.multipart.MultipartFile;
@@ -24,6 +28,8 @@ import java.lang.reflect.Method;
 public class LoggerAspect {
 
     private LogProperty logProperty;
+
+    private LocalVariableTableParameterNameDiscoverer parameterNameDiscoverer = new LocalVariableTableParameterNameDiscoverer();
 
     public LoggerAspect(LogProperty logProperty) {
         this.logProperty = logProperty;
@@ -56,7 +62,7 @@ public class LoggerAspect {
         }catch (Exception e) {
             long start = System.currentTimeMillis();
             logger.info("Started method 【{}】 params 【{}】", methodName, params);
-            final Object proceed = joinPoint.proceed();
+            Object proceed = invokeProceed(joinPoint, start, methodName, params, null);
             if (proceed != null) {
                 logResult = proceed.toString();
             }
@@ -73,8 +79,7 @@ public class LoggerAspect {
 
         logger.info("Started request requester [{}] method [{}] params [{}] IP [{}] callSource [{}] appVersion [{}] apiVersion [{}] userAgent [{}]", requester, methodName, params, ip, callSource, appVersion, apiVersion, userAgent);
         long start = System.currentTimeMillis();
-
-        Object result = joinPoint.proceed();
+        Object result = invokeProceed(joinPoint, start, methodName, params, requester);
         if(result != null)
         {
             logResult = result.toString();
@@ -82,6 +87,22 @@ public class LoggerAspect {
         logger.info("Ended request requester [{}] method [{}] params[{}] response is [{}] cost [{}] millis ",
                 requester, methodName, params, logResult, System.currentTimeMillis() - start);
         return result;
+    }
+
+    private Object invokeProceed(ProceedingJoinPoint joinPoint,long start, String methodName, String params,Object requester) throws Throwable {
+        Object proceed;
+        try {
+            proceed = joinPoint.proceed();
+        } catch (Throwable ex) {
+            if (requester != null) {
+                logger.info("Ended request requester [{}] method [{}] params[{}] with Exception 【{}】 cost [{}] millis ",
+                        requester, methodName, params, ex.toString(), System.currentTimeMillis() - start);
+            } else {
+                logger.info(" Ended method 【{}】 params 【{}】with Exception 【{}】cost [{}] millis ", methodName, params,ex.toString(),System.currentTimeMillis() - start);
+            }
+            throw ex;
+        }
+        return proceed;
     }
 
     private String getMethodName(ProceedingJoinPoint joinPoint) {
@@ -95,8 +116,14 @@ public class LoggerAspect {
 
     private String getParamsJson(ProceedingJoinPoint joinPoint) {
         final Object[] args = joinPoint.getArgs();
+        final MethodSignature signature = (MethodSignature) joinPoint.getSignature();
+        Method method = signature.getMethod();
+        // 获取方法的参数名称
+        String[] parameterNames = parameterNameDiscoverer.getParameterNames(method);
         StringBuilder sb = new StringBuilder();
-        for (Object arg:args) {
+        for (int i = 0; i < args.length; i++) {
+            Object arg = args[i];
+            String paramName = parameterNames != null?parameterNames[i]:null;
             if(arg == null)
             {
                 continue;
@@ -114,7 +141,11 @@ public class LoggerAspect {
                     long size = ((MultipartFile) arg).getSize();
                     paramStr = MultipartFile.class.getSimpleName() + ":" + ((MultipartFile) arg).getName() + "size:" + size;
                 } else {
-                    paramStr = arg.toString();
+                    if (paramName != null) {
+                        paramStr = paramName + ":" + arg.toString();
+                    } else {
+                        paramStr = arg.toString();
+                    }
                 }
             }
             sb.append(paramStr).append(",");
@@ -137,7 +168,10 @@ public class LoggerAspect {
             return false;
         }
         //如果方法为get请求则根据配置是否打印，除非方法、类上有Log注解
-        return (logProperty.isLogGet() && method.getAnnotation(GetMapping.class) != null) || method.getAnnotation(Log.class) != null
+        if (!logProperty.isLogGet() && method.getAnnotation(GetMapping.class) != null) {
+            return false;
+        }
+        return method.getAnnotation(Log.class) != null
                 || method.getDeclaringClass().getAnnotation(Log.class) != null;
     }
 

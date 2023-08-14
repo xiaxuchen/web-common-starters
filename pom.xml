@@ -19,18 +19,22 @@
         <module>common-response-starter</module>
         <module>common</module>
         <module>common-logger-starter</module>
-        <module>common-exception</module>
+        <module>common-exception-starter</module>
         <module>common-user-service</module>
-        <module>common-mp-generator</module>
         <module>demo</module>
-<!--        <module>common-mp</module>-->
         <module>common-file</module>
         <module>entity2table</module>
-        <module>mp2table_acquirer</module>
+        <module>common-mybatis-crud</module>
+        <module>common-web-starter</module>
     </modules>
 
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>org.mybatis.spring.boot</groupId>
+                <artifactId>mybatis-spring-boot-starter</artifactId>
+                <version>2.1.4</version>
+            </dependency>
             <dependency>
                 <groupId>com.github.tobato</groupId>
                 <artifactId>fastdfs-client</artifactId>
@@ -53,6 +57,11 @@
             </dependency>
             <dependency>
                 <groupId>org.originit</groupId>
+                <artifactId>common-exception-starter</artifactId>
+                <version>2.0</version>
+            </dependency>
+            <dependency>
+                <groupId>org.originit</groupId>
                 <artifactId>common</artifactId>
                 <version>1.0-SNAPSHOT</version>
             </dependency>
@@ -65,6 +74,11 @@
                 <groupId>org.originit</groupId>
                 <artifactId>common-logger-starter</artifactId>
                 <version>1.0-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>cn.hutool</groupId>
+                <artifactId>hutool-all</artifactId>
+                <version>5.8.4</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

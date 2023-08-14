@@ -1,6 +1,7 @@
 package com.originit.common.config;
 
 import com.originit.common.param.anno.BodyFieldArgResolver;
+import com.originit.common.utils.SpringUtil;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -25,5 +26,10 @@ public class CommonAutoConfiguration implements WebMvcConfigurer {
             resolvers.add(bodyFieldArgResolver);
         }
         WebMvcConfigurer.super.addArgumentResolvers(resolvers);
+    }
+
+    @Bean
+    public SpringUtil springUtil() {
+        return new SpringUtil();
     }
 }

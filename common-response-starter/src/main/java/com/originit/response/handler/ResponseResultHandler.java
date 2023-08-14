@@ -45,7 +45,7 @@ public class ResponseResultHandler implements ResponseBodyAdvice {
             }
             return type.getConstructor(Object.class).newInstance(body);
         } catch (Exception e) {
-            throw new IllegalStateException("Result的子类必须包含一个只有一个Object类型的构造器用于构造成功请求");
+            throw new IllegalStateException("Result的子类必须包含一个只有一个Object类型的构造器用于构造成功请求",e);
         }
     }
 }

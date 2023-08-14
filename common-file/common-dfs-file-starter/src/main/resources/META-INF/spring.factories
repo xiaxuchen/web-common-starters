@@ -1,3 +1,0 @@
-# Auto Configure
-org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-org.originit.common.file.dfs.config.DFSFileAutoConfiguration

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+http://www.springframework.org/schema/beans/spring-beans.xsd
+http://www.springframework.org/schema/mvc
+http://www.springframework.org/schema/mvc/spring-mvc.xsd
+http://www.springframework.org/schema/context
+http://www.springframework.org/schema/context/spring-context.xsd">
+
+    <!-- 加载外部属性配置文件 -->
+    <context:property-placeholder location="classpath:jdbc.properties"/>
+    <!-- 声明数据源DataSource -->
+    <bean id="myDataSource" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
+        <property name="url" value="${jdbc.url}"/>
+        <property name="driverClassName" value="${jdbc.driver}" />
+        <property name="username" value="${jdbc.username}"/>
+        <property name="password" value="${jdbc.password}"/>
+    </bean>
+
+    <!-- 声明SqlSessionFactoryBean，在这个类的内部，创建SqlSessionFactory对象，之后就可以获取SqlSession对象 -->
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <!-- 指定数据源 -->
+        <property name="dataSource" ref="myDataSource"/>
+        <!-- 指定mybatis主配置文件 -->
+        <property name="configLocation" value="classpath:MapperConfig.xml"/>
+    </bean>
+
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="basePackage" value="org.originit.crud.mapper"/>
+        <!-- 注意这里只能设置sqlSessionFactoryBeanName！！！ -->
+        <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"/>
+        <property name="markerInterface" value="org.originit.crud.mapper.CrudMapper"/>
+        <property name="mapperFactoryBeanClass" value="org.originit.crud.factory.MapperProxyFactoryBean"/>
+    </bean>
+</beans>
