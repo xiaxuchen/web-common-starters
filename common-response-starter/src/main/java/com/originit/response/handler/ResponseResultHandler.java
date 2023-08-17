@@ -1,11 +1,14 @@
 package com.originit.response.handler;
 
 
+import cn.hutool.json.JSONConfig;
+import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.originit.common.utils.RequestContextHolderUtil;
 import com.originit.response.constant.Const;
 import com.originit.response.property.ResponseProperty;
-import com.originit.response.result.Result;
+import com.originit.response.result.ResultGenerator;
+import com.originit.response.result.ResultMap;
 import com.originit.response.result.SimpleData;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,36 +19,32 @@ import org.springframework.http.server.ServerHttpResponse;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 
+import javax.annotation.Resource;
+import java.util.HashMap;
+import java.util.Map;
+
 @ControllerAdvice
 public class ResponseResultHandler implements ResponseBodyAdvice {
 
-    @Autowired
-    ResponseProperty property;
+    @Resource
+    ResultGenerator resultGenerator;
 
     @Override
     public boolean supports(MethodParameter returnType, Class converterType) {
-        Class type = (Class) RequestContextHolderUtil.getRequest().getAttribute(Const.RESPONSE_RESULT);
-        return type != null && (returnType.getParameterType() == String.class || !BeanUtils.isSimpleProperty(returnType.getParameterType()));
+        Boolean need = (Boolean) RequestContextHolderUtil.getRequest().getAttribute(Const.RESPONSE_RESULT);
+        return need != null && need;
     }
 
     @Override
     public Object beforeBodyWrite(Object body, MethodParameter returnType, MediaType selectedContentType, Class selectedConverterType, ServerHttpRequest request, ServerHttpResponse response) {
-        Class type = (Class) RequestContextHolderUtil.getRequest().getAttribute(Const.RESPONSE_RESULT);
-        // 如果是Result类型的就不包装了
-        if(body instanceof Result) {
-            return body;
-        }
         //如果是通用响应类则进行创建返回
-        try {
-            if (returnType.getParameterType() == SimpleData.class) {
-                return type.getConstructor(Object.class).newInstance(((SimpleData) body).getData());
-            }
-            if (returnType.getParameterType() == String.class) {
-                return JSONUtil.toJsonStr(type.getConstructor(Object.class).newInstance(body));
-            }
-            return type.getConstructor(Object.class).newInstance(body);
-        } catch (Exception e) {
-            throw new IllegalStateException("Result的子类必须包含一个只有一个Object类型的构造器用于构造成功请求",e);
+        Object data = body;
+        if (data instanceof ResultMap) {
+            return data;
         }
+        if (returnType.getParameterType() == SimpleData.class) {
+            data = ((SimpleData) body).getData();
+        }
+        return resultGenerator.success(data);
     }
 }

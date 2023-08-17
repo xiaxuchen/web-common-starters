@@ -1,6 +1,5 @@
 package org.originit.common.userservice.web;
 
-import com.originit.response.anotation.ResponseResult;
 import org.originit.common.userservice.callback.LoginUserCallback;
 import org.originit.common.userservice.entity.ILoginUser;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +11,6 @@ import javax.servlet.http.HttpServletRequest;
  * @author xxc
  */
 @RestController
-@ResponseResult
 @RequestMapping("/user")
 public class UserController {
 

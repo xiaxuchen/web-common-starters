@@ -4,5 +4,9 @@ server:
 common:
   response:
     success-code: 300
+    field-names:
+      code: status
+      msg: error
+      data: info
   logger:
     log-get: false

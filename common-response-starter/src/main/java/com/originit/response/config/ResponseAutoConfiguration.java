@@ -1,11 +1,10 @@
 package com.originit.response.config;
 
 
-import com.originit.response.anotation.ResponseResult;
 import com.originit.response.property.ResponseProperty;
 import com.originit.response.handler.ResponseResultHandler;
 import com.originit.response.interceptor.ResponseResultInterceptor;
-import com.originit.response.result.PlatformResult;
+import com.originit.response.result.DefaultResultGenerator;
 import com.originit.response.success.DefaultSuccessCodeAcquirer;
 import com.originit.response.success.SuccessCodeAcquirer;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -51,5 +50,10 @@ public class ResponseAutoConfiguration implements WebMvcConfigurer {
     @Bean
     public SuccessCodeAcquirer successCodeAcquirer() {
         return new DefaultSuccessCodeAcquirer();
+    }
+
+    @Bean
+    public DefaultResultGenerator resultGenerator() {
+        return new DefaultResultGenerator();
     }
 }

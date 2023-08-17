@@ -8,6 +8,7 @@
     </parent>
 
     <artifactId>common-web-starter</artifactId>
+    <version>2.0</version>
     <packaging>jar</packaging>
 
     <name>common-web-starter</name>

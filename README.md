@@ -20,12 +20,27 @@
     }
 }
 ```
+### 配置
 其中成功的响应码可通过application.yml配置,如下:
 ```
 common:
     response:
         success-code: 300
 ```
+统一响应字段名称则可以通过以下配置项进行，如下:
+```
+common:
+  response:
+    field-names:
+      code: status
+      msg: error
+      data: info
+```
+### 内置响应生成
+- com.originit.response.result.ResultGenerator
+提供了成功和失败的响应生成器，我们可以注入使用。
+- com.originit.response.success.SuccessCodeAcquirer
+提供了成功响应码的获取器，我们可以注入使用。
 ### 接入
 - 引入依赖
 ```
@@ -36,35 +51,22 @@ common:
   </dependency>
 ```
 ### 使用
-#### @ResponseResult
-标注在类或者HTTP接口方法上，声明响应的结果类型，默认为PlatformResult。 
-标注该注解之后才会进行统一响应的包裹。
-```
-public class PlatformResult<T> extends Result{
-
-    private Integer code;
-    private String msg;
-    private T data;
-     
-    public PlatformResult(T data) {
-        this.code = SpringUtil.getBean(SuccessCodeAcquirer.class).getSuccessCode();
-        this.data = data;
-    }
-}
-```
-如果要实现自定义的统一响应。需要继承Result类，同时提供一个Object参数的构造方法，如上构造方法会因为泛型擦除转为Object 
-最后再通过ResponseResult的value属性进行声明，框架将会自动使用该响应。
-
+#### @RestController或者@ResponseBody
 使用案例如下:
 ```
 // 通过@RestController注解所有的接口方法都会将返回值转换成JSON
-// 通过@ResponseResult注解，所有接口都会在返回值的基础上包一层com.xxc.response.result.PlatformResult，这样就不用手写了
 // 如果有些接口不需要包裹，就在方法上添加@OriginResponse注解即可
-// 注意，当接口正常响应会包裹，若出现未捕获的异常，则会转到全局异常处理器
 @RestController
-@ResponseResult
 @RequestMapping("/resource")
 public class ResourceController {
+
+    // 通过@ResponseBody注解只有该接口方法会将返回值转换成JSON
+    @RequestMapping("/hello")
+    @ResponseBody
+    public SimpleData<String> sayHello() {
+        return SimpleData.of("hahah");
+    }
+    
     
 }
 ```
@@ -78,7 +80,7 @@ public SimpleData<String> sayHello() {
 ```
 这是因为HandlerMethodReturnValueHandler对String的处理会先被其他的Handler拦截，导致我们的统一响应无法生效，所以我们需要手动包裹一层使得返回值为对象类型，才能使得RequestResponseBodyMethodProcessor去处理我们的响应。
 #### @OriginResponse
-对于标注了ResponseResult注解的类，默认所有接口都会做包裹，我们可以通过声明OriginResponse使得指定方法不使用统一响应
+对于标注了RestController注解的类，默认所有接口都会做包裹，我们可以通过声明OriginResponse使得指定方法不使用统一响应
 ### 注意事项
 我们只会对返回RestController或者标注ResponseBody的接口进行包裹统一响应。
 ## 2. common-exception-starter

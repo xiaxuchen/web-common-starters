@@ -2,10 +2,8 @@ package com.originit.response.interceptor;
 
 
 import com.originit.response.anotation.OriginResponse;
-import com.originit.response.anotation.ResponseResult;
 import com.originit.response.constant.Const;
 import com.originit.response.property.ResponseProperty;
-import com.originit.response.result.PlatformResult;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.method.HandlerMethod;
@@ -29,7 +27,8 @@ public class ResponseResultInterceptor implements HandlerInterceptor {
         {
             HandlerMethod handler = (HandlerMethod) originHandler;
             // 如果有@OriginResponse注解将不拦截
-            if(handler.getMethod().isAnnotationPresent(OriginResponse.class)) {
+            if(handler.getBeanType().isAnnotationPresent(OriginResponse.class) || handler.getMethod().isAnnotationPresent(OriginResponse.class)) {
+                request.setAttribute(Const.RESPONSE_RESULT, false);
                 return true;
             }
             //如果调用的Controller的方法或Controller类上使用了ResponseResult注解，
@@ -37,21 +36,9 @@ public class ResponseResultInterceptor implements HandlerInterceptor {
             boolean isJson = (handler.getBeanType().isAnnotationPresent(RestController.class) ||
                     handler.getMethod().isAnnotationPresent(ResponseBody.class) ||
                     handler.getBeanType().isAnnotationPresent(ResponseBody.class)) && !handler.getMethod().getReturnType().isAssignableFrom(ModelAndView.class);
-            boolean isResult = handler.getBeanType().isAnnotationPresent(ResponseResult.class)
-                    || handler.getMethod().isAnnotationPresent(ResponseResult.class);
-            if(isJson && isResult)
-            {
-                ResponseResult type = handler.getBeanType().getAnnotation(ResponseResult.class);
-                if(type == null) {
-                    type = handler.getMethod().getAnnotation(ResponseResult.class);
-                }
-                if (type == null) {
-                    // 默认用这个
-                    request.setAttribute(Const.RESPONSE_RESULT, PlatformResult.class);
-                } else {
-                    request.setAttribute(Const.RESPONSE_RESULT,type.value());
-                }
-            }
+            request.setAttribute(Const.RESPONSE_RESULT, isJson);
+        } else {
+            request.setAttribute(Const.RESPONSE_RESULT, false);
         }
         return true;
     }
